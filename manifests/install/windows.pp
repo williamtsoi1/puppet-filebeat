@@ -17,10 +17,18 @@ class filebeat::install::windows {
     verify_peer => false,
   }
 
-  exec { "unzip ${filename}":
-    command  => "\$sh=New-Object -COM Shell.Application;\$sh.namespace((Convert-Path '${filebeat::install_dir}')).Copyhere(\$sh.namespace((Convert-Path '${filebeat::tmp_dir}/${filename}.zip')).items(), 16)",
-    creates  => "${filebeat::install_dir}/Filebeat",
-    provider => powershell,
+  #exec { "unzip ${filename}":
+  #  command  => "\$sh=New-Object -COM Shell.Application;\$sh.namespace((Convert-Path '${filebeat::install_dir}')).Copyhere(\$sh.namespace((Convert-Path '${filebeat::tmp_dir}/${filename}.zip')).items(), 16)",
+  #  creates  => "${filebeat::install_dir}/Filebeat",
+  #  provider => powershell,
+  #  require  => [
+  #    File[$filebeat::install_dir],
+  #    Remote_file["${filebeat::tmp_dir}/${filename}.zip"],
+  #  ],
+  #}
+
+  windows::unzip { "${filebeat::tmp_dir}/${filename}.zip":  
+    destination => '${filebeat::install_dir}',
     require  => [
       File[$filebeat::install_dir],
       Remote_file["${filebeat::tmp_dir}/${filename}.zip"],
